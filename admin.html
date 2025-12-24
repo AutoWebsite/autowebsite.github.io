@@ -4,16 +4,18 @@
   <title>Admin Panel</title>
 </head>
 <body>
+
   <div id="header"></div>
 
   <h2>Admin Panel – Add Tool</h2>
 
+  <!-- Input Fields -->
   <input id="title" placeholder="Title"><br><br>
-  <input id="slug" placeholder="Slug"><br><br>
+  <input id="slug" placeholder="Slug (unique, e.g., calculator-tool)"><br><br>
   <input id="emoji" placeholder="Emoji"><br><br>
   <textarea id="shortDesc" placeholder="Short description"></textarea><br><br>
   <input id="category" placeholder="Category"><br><br>
-  <input id="seoDesc" placeholder="SEO Description"><br><br>
+  <input id="seoDesc" placeholder="SEO Description"></input><br><br>
   <button onclick="addTool()">Add Tool</button>
 
   <div id="footer"></div>
@@ -25,24 +27,36 @@
     fetch("header.html").then(r => r.text()).then(t => document.getElementById("header").innerHTML = t);
     fetch("footer.html").then(r => r.text()).then(t => document.getElementById("footer").innerHTML = t);
 
+    // Function to add tool
     window.addTool = async function(){
-      if(!title.value || !slug.value) { alert("Title & Slug required"); return; }
+      // Validation
+      if(!title.value || !slug.value){
+        alert("Title and Slug are required!");
+        return;
+      }
 
-      await addDoc(collection(db, "tools"), {
-        title: title.value,
-        slug: slug.value,
-        emoji: emoji.value,
-        shortDesc: shortDesc.value,
-        category: category.value,
-        seoDesc: seoDesc.value,
-        createdAt: Timestamp.now()
-      });
+      try {
+        // Add document to Firestore
+        await addDoc(collection(db, "tools"), {
+          title: title.value,
+          slug: slug.value,
+          emoji: emoji.value || "🛠", // default emoji
+          shortDesc: shortDesc.value || "",
+          category: category.value || "General",
+          seoDesc: seoDesc.value || "",
+          createdAt: Timestamp.now()
+        });
 
-      alert("Tool added successfully!");
+        alert("Tool added successfully!");
 
-      // Clear input fields
-      title.value = slug.value = emoji.value = shortDesc.value = category.value = seoDesc.value = "";
+        // Clear input fields
+        title.value = slug.value = emoji.value = shortDesc.value = category.value = seoDesc.value = "";
+
+      } catch(err) {
+        alert("Error adding tool: " + err.message);
+      }
     }
   </script>
+
 </body>
 </html>
