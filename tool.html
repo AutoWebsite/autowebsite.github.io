@@ -2,18 +2,22 @@
 <html>
 <head>
   <title>Tool Page</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
+
   <div id="header"></div>
 
-  <h1 id="tool-title"></h1>
-  <p id="tool-emoji"></p>
-  <div id="tool-desc"></div>
-  <div id="tool-category"></div>
-  <div id="seo-desc"></div>
+  <div style="max-width:600px; margin:auto; padding:10px;">
+    <h1 id="tool-title"></h1>
+    <p id="tool-emoji" style="font-size:30px;"></p>
+    <div id="tool-desc"></div>
+    <div id="tool-category" style="margin-top:5px; font-weight:bold;"></div>
+    <div id="seo-desc" style="margin-top:5px;"></div>
 
-  <h3>Other Tools</h3>
-  <div id="other-tools"></div>
+    <h3 style="margin-top:20px;">Other Tools</h3>
+    <div id="other-tools"></div>
+  </div>
 
   <div id="footer"></div>
 
@@ -21,41 +25,48 @@
     import { db, collection, getDocs } from "./firebase.js";
 
     // Load header/footer
-    fetch("header.html").then(r => r.text()).then(t => document.getElementById("header").innerHTML = t);
-    fetch("footer.html").then(r => r.text()).then(t => document.getElementById("footer").innerHTML = t);
+    fetch("header.html").then(r=>r.text()).then(t=>document.getElementById("header").innerHTML=t);
+    fetch("footer.html").then(r=>r.text()).then(t=>document.getElementById("footer").innerHTML=t);
 
-    // Get current tool slug from URL
+    // Get current tool slug
     const params = new URLSearchParams(window.location.search);
     const slug = params.get("slug");
 
-    const snap = await getDocs(collection(db, "tools"));
-    let currentTool = null;
+    async function loadTool(){
+      const snap = await getDocs(collection(db, "tools"));
+      let currentTool = null;
+      const otherDiv = document.getElementById("other-tools");
 
-    snap.forEach(doc => {
-      const data = doc.data();
-      if(data.slug === slug){
-        currentTool = data;
-        document.getElementById("tool-title").innerText = data.title;
-        document.getElementById("tool-emoji").innerText = data.emoji;
-        document.getElementById("tool-desc").innerText = data.shortDesc;
-        document.getElementById("tool-category").innerText = "Category: " + data.category;
-        document.getElementById("seo-desc").innerText = data.seoDesc;
-      }
-    });
+      snap.forEach(doc => {
+        const data = doc.data();
+        // Current tool
+        if(data.slug === slug){
+          currentTool = data;
+          document.getElementById("tool-title").innerText = data.title;
+          document.getElementById("tool-emoji").innerText = data.emoji;
+          document.getElementById("tool-desc").innerText = data.shortDesc;
+          document.getElementById("tool-category").innerText = "Category: " + data.category;
+          document.getElementById("seo-desc").innerText = data.seoDesc;
+        }
+      });
 
-    // Other tools
-    snap.forEach(doc => {
-      const data = doc.data();
-      if(data.slug !== slug){
-        document.getElementById("other-tools").innerHTML += `
-          <div style="border:1px solid #ccc;padding:5px;margin:5px;">
-            ${data.emoji} <b>${data.title}</b>
-            <p>${data.shortDesc}</p>
-            <a href="tool.html?slug=${data.slug}">Open Tool</a>
-          </div>
-        `;
-      }
-    });
+      // Other Tools
+      snap.forEach(doc => {
+        const data = doc.data();
+        if(data.slug !== slug){
+          otherDiv.innerHTML += `
+            <div style="border:1px solid #ccc; padding:8px; margin:5px; border-radius:6px;">
+              ${data.emoji} <b>${data.title}</b>
+              <p>${data.shortDesc}</p>
+              <a href="tool.html?slug=${data.slug}" style="color:blue; text-decoration:underline;">Open Tool</a>
+            </div>
+          `;
+        }
+      });
+    }
+
+    loadTool();
   </script>
+
 </body>
 </html>
