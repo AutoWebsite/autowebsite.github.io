@@ -4,33 +4,47 @@
   <title>My Tools Website</title>
 </head>
 <body>
+
   <div id="header"></div>
 
   <h2>All Tools</h2>
-  <div id="tools"></div>
+  <div id="tools"></div> <!-- Tools will appear here -->
 
   <div id="footer"></div>
 
   <script type="module">
     import { db, collection, getDocs } from "./firebase.js";
 
-    // Load header/footer
-    fetch("header.html").then(r => r.text()).then(t => document.getElementById("header").innerHTML = t);
-    fetch("footer.html").then(r => r.text()).then(t => document.getElementById("footer").innerHTML = t);
+    // 1️⃣ Load header & footer
+    fetch("header.html")
+      .then(r => r.text())
+      .then(t => document.getElementById("header").innerHTML = t);
 
-    // Fetch tools from Firebase
-    const snap = await getDocs(collection(db, "tools"));
-    snap.forEach(doc => {
-      const data = doc.data();
-      document.getElementById("tools").innerHTML += `
-        <div style="border:1px solid #ccc;padding:8px;margin:5px;">
-          <span style="font-size:24px">${data.emoji}</span>
-          <b>${data.title}</b>
-          <p>${data.shortDesc}</p>
-          <a href="tool.html?slug=${data.slug}">Open Tool</a>
-        </div>
-      `;
-    });
+    fetch("footer.html")
+      .then(r => r.text())
+      .then(t => document.getElementById("footer").innerHTML = t);
+
+    // 2️⃣ Fetch tools from Firebase Firestore
+    async function loadTools(){
+      const snap = await getDocs(collection(db, "tools"));
+      const toolsDiv = document.getElementById("tools");
+      toolsDiv.innerHTML = ""; // Clear before load
+
+      snap.forEach(doc => {
+        const data = doc.data();
+        toolsDiv.innerHTML += `
+          <div style="border:1px solid #ccc; padding:10px; margin:8px; border-radius:8px;">
+            <span style="font-size:24px;">${data.emoji}</span>
+            <b style="font-size:18px; margin-left:5px;">${data.title}</b>
+            <p>${data.shortDesc}</p>
+            <a href="tool.html?slug=${data.slug}" style="color:blue; text-decoration:underline;">Open Tool</a>
+          </div>
+        `;
+      });
+    }
+
+    loadTools(); // Call the function
   </script>
+
 </body>
 </html>
