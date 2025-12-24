@@ -1,0 +1,21 @@
+<input id="title" placeholder="Title">
+<input id="slug" placeholder="slug">
+<input id="emoji" placeholder="emoji">
+<textarea id="shortDesc"></textarea>
+<button onclick="addTool()">Add Tool</button>
+
+<script type="module">
+import { db } from "./firebase.js";
+import { collection, addDoc, Timestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+window.addTool = async function () {
+  await addDoc(collection(db, "tools"), {
+    title: title.value,
+    slug: slug.value,
+    emoji: emoji.value,
+    shortDesc: shortDesc.value,
+    createdAt: Timestamp.now()
+  });
+  alert("Tool Added");
+}
+</script>
