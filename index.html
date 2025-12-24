@@ -1,0 +1,16 @@
+<div id="tools"></div>
+
+<script type="module">
+import { db } from "./firebase.js";
+import { collection, getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+const snap = await getDocs(collection(db,"tools"));
+snap.forEach(doc=>{
+  tools.innerHTML += `
+    <div>
+      ${doc.data().emoji}
+      <b>${doc.data().title}</b>
+      <p>${doc.data().shortDesc}</p>
+    </div>`;
+});
+</script>
