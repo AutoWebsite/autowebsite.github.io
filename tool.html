@@ -20,11 +20,11 @@
   <script type="module">
     import { db, collection, getDocs } from "./firebase.js";
 
-    // Header/Footer load
+    // Load header/footer
     fetch("header.html").then(r => r.text()).then(t => document.getElementById("header").innerHTML = t);
     fetch("footer.html").then(r => r.text()).then(t => document.getElementById("footer").innerHTML = t);
 
-    // Get slug from URL
+    // Get current tool slug from URL
     const params = new URLSearchParams(window.location.search);
     const slug = params.get("slug");
 
@@ -43,12 +43,12 @@
       }
     });
 
-    // Other Tools
+    // Other tools
     snap.forEach(doc => {
       const data = doc.data();
       if(data.slug !== slug){
         document.getElementById("other-tools").innerHTML += `
-          <div>
+          <div style="border:1px solid #ccc;padding:5px;margin:5px;">
             ${data.emoji} <b>${data.title}</b>
             <p>${data.shortDesc}</p>
             <a href="tool.html?slug=${data.slug}">Open Tool</a>
