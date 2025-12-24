@@ -2,29 +2,25 @@
 <html>
 <head>
   <title>My Tools Website</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
 
   <div id="header"></div>
 
-  <h2>All Tools</h2>
-  <div id="tools"></div> <!-- Tools will appear here -->
+  <h2 style="text-align:center; margin-top:15px;">All Tools</h2>
+  <div id="tools" style="max-width:600px; margin:auto;"></div>
 
   <div id="footer"></div>
 
   <script type="module">
     import { db, collection, getDocs } from "./firebase.js";
 
-    // 1️⃣ Load header & footer
-    fetch("header.html")
-      .then(r => r.text())
-      .then(t => document.getElementById("header").innerHTML = t);
+    // Load header/footer
+    fetch("header.html").then(r => r.text()).then(t => document.getElementById("header").innerHTML = t);
+    fetch("footer.html").then(r => r.text()).then(t => document.getElementById("footer").innerHTML = t);
 
-    fetch("footer.html")
-      .then(r => r.text())
-      .then(t => document.getElementById("footer").innerHTML = t);
-
-    // 2️⃣ Fetch tools from Firebase Firestore
+    // Fetch tools from Firebase
     async function loadTools(){
       const snap = await getDocs(collection(db, "tools"));
       const toolsDiv = document.getElementById("tools");
@@ -43,7 +39,7 @@
       });
     }
 
-    loadTools(); // Call the function
+    loadTools(); // Call function
   </script>
 
 </body>
