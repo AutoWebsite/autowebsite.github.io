@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tool Page</title>
+</head>
+<body>
+  <div id="header"></div>
+
+  <h1 id="tool-title"></h1>
+  <p id="tool-emoji"></p>
+  <div id="tool-desc"></div>
+  <div id="tool-category"></div>
+  <div id="seo-desc"></div>
+
+  <h3>Other Tools</h3>
+  <div id="other-tools"></div>
+
+  <div id="footer"></div>
+
+  <script type="module">
+    import { db, collection, getDocs } from "./firebase.js";
+
+    // Header/Footer load
+    fetch("header.html").then(r => r.text()).then(t => document.getElementById("header").innerHTML = t);
+    fetch("footer.html").then(r => r.text()).then(t => document.getElementById("footer").innerHTML = t);
+
+    // Get slug from URL
+    const params = new URLSearchParams(window.location.search);
+    const slug = params.get("slug");
+
+    const snap = await getDocs(collection(db, "tools"));
+    let currentTool = null;
+
+    snap.forEach(doc => {
+      const data = doc.data();
+      if(data.slug === slug){
+        currentTool = data;
+        document.getElementById("tool-title").innerText = data.title;
+        document.getElementById("tool-emoji").innerText = data.emoji;
+        document.getElementById("tool-desc").innerText = data.shortDesc;
+        document.getElementById("tool-category").innerText = "Category: " + data.category;
+        document.getElementById("seo-desc").innerText = data.seoDesc;
+      }
+    });
+
+    // Other Tools
+    snap.forEach(doc => {
+      const data = doc.data();
+      if(data.slug !== slug){
+        document.getElementById("other-tools").innerHTML += `
+          <div>
+            ${data.emoji} <b>${data.title}</b>
+            <p>${data.shortDesc}</p>
+            <a href="tool.html?slug=${data.slug}">Open Tool</a>
+          </div>
+        `;
+      }
+    });
+  </script>
+</body>
+</html>
